@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"simpleRestApi/internal/domain"
@@ -19,6 +20,7 @@ func (h *Handler) createList(c *gin.Context) {
 	}
 
 	var input domain.TodoList
+	fmt.Println(input.Date, "LDKSLSKDLSLKDLK")
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
@@ -26,6 +28,7 @@ func (h *Handler) createList(c *gin.Context) {
 
 	create, err := h.services.TodoList.Create(int(userId), input)
 	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 

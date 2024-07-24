@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"simpleRestApi/internal/domain"
@@ -29,8 +30,16 @@ func (h *Handler) createItem(c *gin.Context) {
 		return
 	}
 
+	user, err := h.services.MiddleWare.GetUserById(int(userId))
+	fmt.Println(err)
+	fmt.Println(user.Id, user.IsPaidMember, "--__---___---_---__---__-----")
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	// Check if the user is authorized to update this list
-	canUserChange, err := h.services.TodoList.IsUserAuthorizedToUpdateList(id, int(userId))
+	canUserChange, err := h.services.TodoList.IsUserAuthorizedToUpdateList(id, int(user.Id))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, "Can't check if user can update this list")
 		return
@@ -41,7 +50,7 @@ func (h *Handler) createItem(c *gin.Context) {
 		return
 	}
 
-	create, err := h.services.TodoItem.Create(id, input)
+	create, err := h.services.TodoItem.Create(id, input, user)
 	if err != nil {
 		newErrorResponse(c, http.StatusForbidden, err.Error())
 		return

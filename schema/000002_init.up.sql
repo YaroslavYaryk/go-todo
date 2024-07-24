@@ -20,7 +20,8 @@ CREATE TABLE users_lists
     list_id int references todo_lists (id) on delete cascade not null
 );
 
--- noinspection SqlDialectInspection,SqlNoDataSourceInspection
+-- noinspection SqlDialectInspection,SqlNoDataSource
+-- Inspection
 CREATE TABLE todo_items
 (
     id          serial       not null unique,

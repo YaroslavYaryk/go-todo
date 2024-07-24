@@ -19,17 +19,22 @@ type TodoList interface {
 	IsUserAuthorizedToUpdateList(listId int, userId int) (bool, error)
 }
 type TodoItem interface {
-	Create(listId int, item domain.TodoItem) (int, error)
+	Create(listId int, item domain.TodoItem, user domain.UserGet) (int, error)
 	GetAll(listId int, userId int) ([]domain.TodoItem, error)
 	GetById(listId int, userId int, itemId int) (domain.TodoItem, error)
 	Update(itemId int, input domain.TodoItem) error
 	Delete(itemId int) (int, error)
 }
 
+type MiddleWare interface {
+	GetUserById(userId int) (domain.UserGet, error)
+}
+
 type Repository struct {
 	Authorization
 	TodoList
 	TodoItem
+	MiddleWare
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -37,5 +42,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Authorization: NewAuthPostgres(db),
 		TodoList:      NewTodoListPostgres(db),
 		TodoItem:      NewTodoItemPostgres(db),
+		MiddleWare:    NewMiddlewarePostgres(db),
 	}
 }

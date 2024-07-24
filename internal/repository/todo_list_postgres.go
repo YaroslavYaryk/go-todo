@@ -7,6 +7,7 @@ import (
 	"simpleRestApi/internal/domain"
 	"simpleRestApi/pkg/psql"
 	"strings"
+	"time"
 )
 
 type TodoListPostgres struct {
@@ -26,8 +27,8 @@ func (r *TodoListPostgres) Create(userId int, list domain.TodoList) (int, error)
 	}
 
 	var id int
-	createListQuery := fmt.Sprintf("INSERT INTO %s (title, description) VALUES ($1, $2) RETURNING id", psql.TodoListTable)
-	row := tx.QueryRow(createListQuery, list.Title, list.Description)
+	createListQuery := fmt.Sprintf("INSERT INTO %s (title, description, date, created_at) VALUES ($1, $2, $3, $4) RETURNING id", psql.TodoListTable)
+	row := tx.QueryRow(createListQuery, list.Title, list.Description, list.Date, time.Now())
 	if err := row.Scan(&id); err != nil {
 		_ = tx.Rollback()
 		return 0, err
@@ -47,7 +48,7 @@ func (r *TodoListPostgres) Create(userId int, list domain.TodoList) (int, error)
 func (r *TodoListPostgres) GetAll(userId int) ([]domain.TodoListExtended, error) {
 	var lists []domain.TodoListExtended
 
-	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description, ul.user_id as UserId FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1",
+	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description, tl.date, tl.created_at as CreatedAt, ul.user_id as UserId FROM %s tl INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1",
 		psql.TodoListTable, psql.UsersListsTable)
 	err := r.db.Select(&lists, query, userId)
 	return lists, err
@@ -56,7 +57,7 @@ func (r *TodoListPostgres) GetAll(userId int) ([]domain.TodoListExtended, error)
 func (r *TodoListPostgres) GetById(userId, listId int) (domain.TodoList, error) {
 	var list domain.TodoList
 
-	query := fmt.Sprintf(`SELECT tl.id, tl.title, tl.description FROM %s tl
+	query := fmt.Sprintf(`SELECT tl.id, tl.title, tl.description, tl.date, tl.created_at as CreatedAt FROM %s tl
 								INNER JOIN %s ul on tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2`,
 		psql.TodoListTable, psql.UsersListsTable)
 	err := r.db.Get(&list, query, userId, listId)
@@ -78,6 +79,12 @@ func (r *TodoListPostgres) Update(listId int, input domain.TodoList) error {
 	if input.Description != "" {
 		setValues = append(setValues, fmt.Sprintf("description=$%d", argId))
 		args = append(args, input.Description)
+		argId++
+	}
+
+	if input.Date.String() != "" {
+		setValues = append(setValues, fmt.Sprintf("date=$%d", argId))
+		args = append(args, input.Date)
 		argId++
 	}
 

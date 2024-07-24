@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"database/sql"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"simpleRestApi/internal/domain"
 	"strings"
 )
 
@@ -55,12 +56,25 @@ func getUserId(c *gin.Context) (int64, error) {
 	return idInt, nil
 }
 
-func isUserAuthorizedToUpdateList(db *sql.DB, userID, listID int) bool {
-	var count int
-	query := `SELECT COUNT(*) FROM UsersListsTable WHERE user_id = ? AND list_id = ?`
-	err := db.QueryRow(query, userID, listID).Scan(&count)
-	if err != nil {
-		return false
+func (h *Handler) getUserFromContext(c *gin.Context) (*domain.UserGet, error) {
+
+	userId, ok := c.Get("userId")
+
+	if !ok {
+		return nil, errors.New("userId not found in context")
 	}
-	return count > 0
+
+	idInt, ok2 := userId.(int64)
+
+	if !ok2 {
+		return nil, errors.New("userId is of invalid type")
+	}
+
+	user, err := h.services.MiddleWare.GetUserById(int(idInt))
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
 }

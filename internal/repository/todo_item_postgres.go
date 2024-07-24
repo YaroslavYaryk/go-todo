@@ -7,6 +7,7 @@ import (
 	"simpleRestApi/internal/domain"
 	"simpleRestApi/pkg/psql"
 	"strings"
+	"time"
 )
 
 type TodoItemPostgres struct {
@@ -19,15 +20,25 @@ func NewTodoItemPostgres(db *sqlx.DB) *TodoItemPostgres {
 	}
 }
 
-func (r *TodoItemPostgres) Create(listId int, item domain.TodoItem) (int, error) {
+func (r *TodoItemPostgres) Create(listId int, item domain.TodoItem, user domain.UserGet) (int, error) {
 	tx, err := r.db.Begin()
 	if err != nil {
 		return 0, err
 	}
 
+	var userNotification *time.Time
+	if user.IsPaidMember {
+		userNotification = item.NotificationTime
+	} else {
+		userNotification = nil
+	}
+
+	fmt.Println(item.CategoryId, "_--__---___--__---__--__---__--___----")
+
 	var id int
-	createItemQuery := fmt.Sprintf("INSERT INTO %s (title, description, done) VALUES ($1, $2, $3) RETURNING id", psql.TodoItemTable)
-	row := tx.QueryRow(createItemQuery, item.Title, item.Description, false)
+	createItemQuery := fmt.Sprintf("INSERT INTO %s (title, description, done, created_at, updated_at, note, notification_time, predicted_time_to_spend, is_deleted, category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id", psql.TodoItemTable)
+
+	row := tx.QueryRow(createItemQuery, item.Title, item.Description, false, time.Now(), time.Now(), item.Note, userNotification, item.PredictedTimeToSpend, false, item.CategoryId)
 	if err := row.Scan(&id); err != nil {
 		_ = tx.Rollback()
 		return 0, err
@@ -47,7 +58,7 @@ func (r *TodoItemPostgres) Create(listId int, item domain.TodoItem) (int, error)
 func (r *TodoItemPostgres) GetAll(listId int, userId int) ([]domain.TodoItem, error) {
 	var items []domain.TodoItem
 
-	query := fmt.Sprintf(`select ti.id, ti.title, ti.description, ti.done from %s ti
+	query := fmt.Sprintf(`select ti.id, ti.title, ti.description, ti.done, created_at as CreatedAt, updated_at as UpdatedAt, note as Note, notification_time as NotificationTime, predicted_time_to_spend as PredictedTimeToSpend, category as CategoryId from %s ti
     							join %s li on ti.id = li.item_id    
     							join %s ul on li.list_id = ul.list_id        
                                     where ul.user_id = $1 and li.list_id = $2`,

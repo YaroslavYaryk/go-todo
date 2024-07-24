@@ -15,8 +15,8 @@ func newTodoItemService(repo repository.TodoItem) *TodoItemService {
 	}
 }
 
-func (s *TodoItemService) Create(listId int, item domain.TodoItem) (int, error) {
-	return s.repo.Create(listId, item)
+func (s *TodoItemService) Create(listId int, item domain.TodoItem, user domain.UserGet) (int, error) {
+	return s.repo.Create(listId, item, user)
 }
 
 func (s *TodoItemService) GetAll(listId int, userId int) ([]domain.TodoItem, error) {
