@@ -20,10 +20,10 @@ type TodoList interface {
 }
 type TodoItem interface {
 	Create(userId int, item domain.TodoItem, user domain.UserGet) (int, error)
-	GetAll(listId int, userId int) ([]domain.TodoItem, error)
-	GetById(listId int, userId int, itemId int) (domain.TodoItem, error)
-	Update(itemId int, input domain.TodoItem) error
-	Delete(listId int) (int, error)
+	GetAll(listId int, userId int) ([]domain.TodoItemGet, error)
+	GetById(listId int, userId int, itemId int) (domain.TodoItemGet, error)
+	Update(itemId int, input domain.TodoItem, userId int) (bool, error)
+	Delete(listId int, userId int) (int, error)
 }
 
 type MiddleWare interface {

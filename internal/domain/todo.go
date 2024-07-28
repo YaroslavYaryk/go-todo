@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type TodoList struct {
 	Id          int        `json:"id"`
@@ -35,9 +37,12 @@ type TodoItem struct {
 	Note                 *string    `json:"note"`
 	NotificationTime     *time.Time `json:"notification_time"`
 	PredictedTimeToSpend *time.Time `json:"predicted_time_to_spend"`
-	Order                int        `json:"order"`
+	Priority             *int       `json:"priority"`
 	IsDeleted            bool       `json:"is_deleted"`
 	CategoryId           *int       `json:"category_id"`
+	ActionMade           *bool      `json:"action_made"`
+	ParentID             *int       `json:"parent_id"`
+	Children             []TodoItem `json:"children"`
 }
 
 type Category struct {
@@ -50,4 +55,21 @@ type ListItem struct {
 	Id     int `json:"id"`
 	ListId int `json:"list_id"`
 	ItemId int `json:"item_id"`
+}
+
+type TodoItemGet struct {
+	Id                   int           `json:"id"`
+	Title                string        `json:"title"`
+	Description          string        `json:"description"`
+	Done                 *bool         `json:"done"`
+	CreatedAt            time.Time     `json:"created_at"`
+	UpdatedAt            time.Time     `json:"updated_at"`
+	Note                 *string       `json:"note"`
+	NotificationTime     *time.Time    `json:"notification_time"`
+	PredictedTimeToSpend *time.Time    `json:"predicted_time_to_spend"`
+	Priority             *int          `json:"priority"`
+	IsDeleted            bool          `json:"is_deleted"`
+	Category             Category      `json:"category"`
+	ParentID             *int          `json:"parent_id"`
+	Children             []TodoItemGet `json:"children"`
 }

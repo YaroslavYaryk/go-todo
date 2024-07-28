@@ -9,7 +9,7 @@ import (
 )
 
 type getAllItemsResponse struct {
-	Data []domain.TodoItem `json:"data"`
+	Data []domain.TodoItemGet `json:"data"`
 }
 
 func (h *Handler) createItem(c *gin.Context) {
@@ -154,14 +154,15 @@ func (h *Handler) updateItem(c *gin.Context) {
 		return
 	}
 
-	err = h.services.TodoItem.Update(itemId, input)
+	isUpdatedRate, err := h.services.TodoItem.Update(itemId, input, int(userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	c.JSON(http.StatusCreated, map[string]interface{}{
-		"status": "Updated",
+		"status":        "Updated",
+		"isUpdatedRate": isUpdatedRate,
 	})
 }
 
@@ -195,7 +196,7 @@ func (h *Handler) deleteItem(c *gin.Context) {
 		return
 	}
 
-	deletedId, err := h.services.TodoItem.Delete(itemId)
+	deletedId, err := h.services.TodoItem.Delete(itemId, int(userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

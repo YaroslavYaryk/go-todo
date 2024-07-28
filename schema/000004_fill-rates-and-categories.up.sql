@@ -14,7 +14,8 @@ INSERT INTO category (id, name, icon_name) VALUES
 (13, 'Grocery', 'mdi-food'),
 (14, 'Errands', 'mdi-run'),
 (15, 'Goals', 'mdi-target'),
-(16, 'Projects', 'mdi-file-document-box');
+(16, 'Empty', 'mdi-empty'),
+(17, 'Projects', 'mdi-file-document-box');
 
 
 INSERT INTO rate (id, name, task_completed) VALUES
@@ -27,4 +28,5 @@ INSERT INTO rate (id, name, task_completed) VALUES
 (7, 'Expert', 500),
 (8, 'Master', 1000),
 (9, 'Grandmaster', 2000),
-(10, 'Legendary', 5000);
+(10, 'Legendary', 5000),
+(11, 'None', 0);
