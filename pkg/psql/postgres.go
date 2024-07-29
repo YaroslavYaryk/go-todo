@@ -13,6 +13,8 @@ const (
 	ListItemTable   = "lists_items"
 	CategoryTable   = "category"
 	RateTable       = "rate"
+	NoteTable       = "notes"
+	UserNoteTable   = "user_note"
 )
 
 type Config struct {

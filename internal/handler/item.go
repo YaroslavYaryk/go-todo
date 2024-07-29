@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"simpleRestApi/internal/domain"
@@ -31,8 +30,6 @@ func (h *Handler) createItem(c *gin.Context) {
 	}
 
 	user, err := h.services.MiddleWare.GetUserById(int(userId))
-	fmt.Println(err)
-	fmt.Println(user.Id, user.IsPaidMember, "--__---___---_---__---__-----")
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

@@ -30,11 +30,21 @@ type MiddleWare interface {
 	GetUserById(userId int) (domain.UserGet, error)
 }
 
+type Note interface {
+	Create(userId int, note domain.Note) (int, error)
+	GetAll(userId int) ([]domain.Note, error)
+	GetById(userId int, noteId int) (domain.Note, error)
+	Update(noteId int, input domain.Note) error
+	Delete(noteId int, userId int) (int, error)
+	ShareNote(userId int, noteId int, sharedUserId int) error
+}
+
 type Repository struct {
 	Authorization
 	TodoList
 	TodoItem
 	MiddleWare
+	Note
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -43,5 +53,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		TodoList:      NewTodoListPostgres(db),
 		TodoItem:      NewTodoItemPostgres(db),
 		MiddleWare:    NewMiddlewarePostgres(db),
+		Note:          NewNotePostgres(db),
 	}
 }

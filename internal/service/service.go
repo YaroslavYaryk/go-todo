@@ -30,11 +30,21 @@ type MiddleWare interface {
 	GetUserById(userId int) (domain.UserGet, error)
 }
 
+type Note interface {
+	Create(userId int, note domain.Note) (int, error)
+	GetAll(userId int) ([]domain.Note, error)
+	GetById(userId int, noteId int) (domain.Note, error)
+	Update(noteId int, input domain.Note) error
+	Delete(noteId int, userId int) (int, error)
+	ShareNote(userId int, noteId int, sharedUserId int) error
+}
+
 type Service struct {
 	Authorization
 	TodoList
 	TodoItem
 	MiddleWare
+	Note
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -43,5 +53,6 @@ func NewService(repos *repository.Repository) *Service {
 		TodoList:      newTodoListService(repos.TodoList),
 		TodoItem:      newTodoItemService(repos.TodoItem),
 		MiddleWare:    NewMiddlewareService(repos.MiddleWare),
+		Note:          NewNoteService(repos.Note),
 	}
 }

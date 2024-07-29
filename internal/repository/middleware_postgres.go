@@ -26,6 +26,5 @@ func (r *MiddlewarePostgres) GetUserById(userId int) (domain.UserGet, error) {
 
 	err := r.db.Get(&user, query, userId)
 
-	fmt.Println(user.Id, user.Username, user.Theme, user.IsPaidMember, "S:KLDL:SKDSD")
 	return user, err
 }

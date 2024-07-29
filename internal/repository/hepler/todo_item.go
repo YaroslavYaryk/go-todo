@@ -48,8 +48,6 @@ func RecalculateUserRate(tx *sql.Tx, userId int) (bool, error) {
 		return false, err
 	}
 
-	fmt.Println(count)
-
 	//	get user old rate
 	oldRate, err := GetUserRate(tx, userId)
 	if err != nil {
