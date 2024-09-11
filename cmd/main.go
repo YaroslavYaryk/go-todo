@@ -43,7 +43,9 @@ func main() {
 
 	srv := new(server.Server)
 
-	logrus.Fatal(srv.Run(viper.GetString("port"), handlers.InitRoutes()))
+	newHandlers := srv.AllowCORS(handlers.InitRoutes())
+
+	logrus.Fatal(srv.Run(viper.GetString("port"), newHandlers))
 }
 
 func initConfig() error {
