@@ -27,7 +27,6 @@ type TodoItem interface {
 }
 
 type MiddleWare interface {
-	GetUserById(userId int) (domain.UserGet, error)
 }
 
 type Note interface {
@@ -39,12 +38,18 @@ type Note interface {
 	ShareNote(userId int, noteId int, sharedUserId int) error
 }
 
+type User interface {
+	GetUserById(userId int) (domain.UserGet, error)
+	UpdateUser(input domain.UserGet, userId int) error
+}
+
 type Repository struct {
 	Authorization
 	TodoList
 	TodoItem
 	MiddleWare
 	Note
+	User
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -54,5 +59,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		TodoItem:      NewTodoItemPostgres(db),
 		MiddleWare:    NewMiddlewarePostgres(db),
 		Note:          NewNotePostgres(db),
+		User:          NewUserPostgres(db),
 	}
 }

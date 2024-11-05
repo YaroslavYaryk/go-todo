@@ -70,7 +70,7 @@ func (h *Handler) getUserFromContext(c *gin.Context) (*domain.UserGet, error) {
 		return nil, errors.New("userId is of invalid type")
 	}
 
-	user, err := h.services.MiddleWare.GetUserById(int(idInt))
+	user, err := h.services.User.GetUserById(int(idInt))
 	if err != nil {
 		return nil, err
 	}

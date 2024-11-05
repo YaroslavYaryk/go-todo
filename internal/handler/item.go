@@ -29,7 +29,7 @@ func (h *Handler) createItem(c *gin.Context) {
 		return
 	}
 
-	user, err := h.services.MiddleWare.GetUserById(int(userId))
+	user, err := h.services.User.GetUserById(int(userId))
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

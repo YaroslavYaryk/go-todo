@@ -24,6 +24,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentity)
 	{
+		user := api.Group("/user")
+		{
+			user.GET("/", h.getUser)
+			user.POST("/edit", h.updateUser)
+		}
+
 		notes := api.Group("/notes")
 		{
 			notes.POST("/", h.createNote)
